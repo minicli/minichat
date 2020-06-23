@@ -12,5 +12,10 @@
   "require": {
     "minicli/minicli": "^2.0",
     "ext-sockets": "*"
+  },
+  "scripts": {
+    "post-install-cmd": [
+      "@php -r \"file_exists('config.php') || copy('config_sample.php', 'config.php');\""
+    ]
   }
 }
