@@ -8,14 +8,9 @@ if (php_sapi_name() !== 'cli') {
 require __DIR__ . '/vendor/autoload.php';
 
 use Minicli\App;
+$config = require('config.php');
 
-$app = new App([
-    'app_path' => __DIR__ . '/app/Command',
-
-    #Twitch
-    'twitch_user' => 'erikaheidi',
-    'twitch_oauth' => 'oauth:6ziu9k8nwuwhuo02ycxfits38m4wfv'
-]);
+$app = new App($config);
 
 $app->setSignature("Minichat for Twitch.\n./minichat twitch");
 $app->runCommand($argv);
