@@ -42,7 +42,25 @@ class DefaultController extends CommandController
 
             //is it an actual msg?
             if (strstr($content, 'PRIVMSG')) {
-                $this->printMessage($content);
+                $parsed = $this->parseMessage($content);
+                $nick = $parsed['nick'];
+                $message = $parsed['message'];
+                //is there a chat command in it?
+                $this->getPrinter()->info("Received: " . $message);
+
+                if ($message[0] == '!') {
+                    $this->getPrinter()->info("Command detected.");
+                    //it's a command now what
+                    $command = $this->parseCommand($message);
+                    $this->getPrinter()->info("Found command: " . $command);
+
+
+                    $this->getPrinter()->info("Sending message...");
+                    $client->sendMessage($twitch_user, "Will this WORK?");
+
+                }
+
+                $this->printMessage($nick, $message);
                 continue;
             }
 
@@ -50,7 +68,7 @@ class DefaultController extends CommandController
         }
     }
 
-    public function printMessage($raw_message)
+    protected function parseMessage($raw_message)
     {
         $parts = explode(":", $raw_message, 3);
         $nick_parts = explode("!", $parts[1]);
@@ -58,6 +76,11 @@ class DefaultController extends CommandController
         $nick = $nick_parts[0];
         $message = $parts[2];
 
+        return [ 'nick' => $nick, 'message' => $message ];
+    }
+
+    protected function printMessage($nick, $message)
+    {
         $style_nick = "info";
 
         if ($nick === $this->getApp()->config->twitch_user) {
@@ -68,5 +91,12 @@ class DefaultController extends CommandController
         $this->getPrinter()->out(': ');
         $this->getPrinter()->out($message);
         $this->getPrinter()->newline();
+    }
+
+    protected function parseCommand($message)
+    {
+        $explode = explode(' ', $message, 2);
+
+        return substr($explode[0], 1);
     }
 }

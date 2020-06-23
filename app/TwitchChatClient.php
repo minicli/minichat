@@ -45,6 +45,11 @@ class TwitchChatClient
         $this->send(sprintf("JOIN #%s", $channel));
     }
 
+    public function sendMessage($channel, $message)
+    {
+        $this->send(sprintf("PRIVMSG #%s :%s", $channel, $message));
+    }
+
     public function getLastError()
     {
         return socket_last_error($this->socket);
